@@ -51,6 +51,7 @@ dependencies:
   location: ^4.4.0
   flutter: 
     sdk: flutter
+  flutter_dotenv: ^5.0.2
 
 dev_dependencies: 
   flutter_test: 
