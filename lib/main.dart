@@ -39,7 +39,6 @@ Future<void> main() async {
   //     .setInFocusDisplayType(OSNotificationDisplayType.notification);
   GetStorage.init();
   Get.put(ApiProvider());
-  Get.put(UserData());
 
   const initializedSettingsAndroid =
       AndroidInitializationSettings('ic_stat_onesignal_default');

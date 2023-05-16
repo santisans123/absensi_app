@@ -30,7 +30,7 @@ enum Endpoint {
 class API {
   final String host = FlutterConfig.get("https://siap.sigarda.com/public").toString();
 
-  String endpointUri(Endpoint endpoint) => '$host/api/${_paths[endpoint]}';
+  String endpointUri(Endpoint endpoint) => 'https://siap.sigarda.com/public/api/${_paths[endpoint]}';
 
   static final Map<Endpoint, String> _paths = {
     Endpoint.login: 'login',

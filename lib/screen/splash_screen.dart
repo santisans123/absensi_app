@@ -9,7 +9,6 @@ import 'package:location/location.dart' as location;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
-import 'package:spo_balaesang/screen/login_page.dart';
 import 'package:spo_balaesang/screen/login_screen.dart';
 import 'package:spo_balaesang/screen/on_boarding_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
@@ -81,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void navigationPage() {
-    final Widget page = _isLoggedIn ? BottomNavScreen() : LoginPage();
+    final Widget page = _isLoggedIn ? BottomNavScreen() : LoginScreen();
     if (_isFirstSeen) {
       Get.off<Widget>(() => page,
           transition: Transition.rightToLeftWithFade,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:spo_balaesang/screen/application_screen.dart';
-import 'package:spo_balaesang/screen/home_page.dart';
 import 'package:spo_balaesang/screen/home_screen.dart';
 
 class BottomNavScreen extends StatefulWidget {
@@ -9,7 +8,7 @@ class BottomNavScreen extends StatefulWidget {
 }
 
 class _BottomNavScreenState extends State<BottomNavScreen> {
-  final List<Widget> _screens = [HomePage(), ApplicationScreen()];
+  final List<Widget> _screens = [HomeScreen(), ApplicationScreen()];
   int _currentIndex = 0;
 
   final Map<String, dynamic> _bottomNavItems = {
