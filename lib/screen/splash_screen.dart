@@ -10,7 +10,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/login_page.dart';
-import 'package:spo_balaesang/screen/login_screen.dart';
 import 'package:spo_balaesang/screen/on_boarding_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 

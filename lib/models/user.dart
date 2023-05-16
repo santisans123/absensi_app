@@ -56,7 +56,7 @@ class User {
     department: json[userDepartmentField] as String,
     status: json[userStatusField] as String ?? "",
     position: json[userPositionField] as String,
-    unreadNotification: json[userUnreadNotificationsCountField] as int,
+    unreadNotification: json[userUnreadNotificationsCountField] as int ?? 0,
     holiday: json[userIsHolidayField] == null
         ? null
         : Holiday.fromJson(

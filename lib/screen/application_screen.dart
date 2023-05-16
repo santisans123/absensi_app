@@ -16,7 +16,7 @@ import 'package:spo_balaesang/screen/employee_outstation.dart';
 import 'package:spo_balaesang/screen/employee_paid_leave_screen.dart';
 import 'package:spo_balaesang/screen/employee_permission.dart';
 import 'package:spo_balaesang/screen/forgot_pass_screen.dart';
-import 'package:spo_balaesang/screen/login_screen.dart';
+import 'package:spo_balaesang/screen/login_page.dart';
 import 'package:spo_balaesang/screen/outstation_list_screen.dart';
 import 'package:spo_balaesang/screen/paid_leave_list_screen.dart';
 import 'package:spo_balaesang/screen/permission_list_screen.dart';
@@ -31,7 +31,7 @@ class ApplicationScreen extends StatefulWidget {
 }
 
 class _ApplicationScreenState extends State<ApplicationScreen> {
-  final UserData users = Get.find();
+  User user;
   bool _isAlarmActive = false;
   List<Presence> _presences;
 
@@ -47,15 +47,15 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
     }
 
     final Map<String, dynamic> json =
-        jsonDecode(data.toString()) as Map<String, dynamic>;
+    jsonDecode(data.toString()) as Map<String, dynamic>;
 
     if (alarm) {
       await flutterLocalNotificationsPlugin.cancelAll();
     }
 
     setState(() {
-      // user = User.fromJson(json);
-      _presences = users.userDatas.value.presences;
+      user = User.fromJson(json);
+      _presences = user.presences;
       _isAlarmActive = alarm;
       if (_isAlarmActive) {
         _presences.forEach(_setAlarm);
@@ -66,56 +66,56 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
   Future<void> logout() async {
     try {
       Get.defaultDialog(
-          title: 'Keluar',
-          content: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: const <Widget>[
-                Icon(
-                  Icons.dangerous,
-                  color: Colors.red,
-                  size: 72,
-                ),
-                sizedBoxH10,
-                Text('Apakah anda yakin ingin keluar dari aplikasi?'),
-              ],
-            ),
+        title: 'Keluar',
+        content: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: const <Widget>[
+              Icon(
+                Icons.dangerous,
+                color: Colors.red,
+                size: 72,
+              ),
+              sizedBoxH10,
+              Text('Apakah anda yakin ingin keluar dari aplikasi?'),
+            ],
           ),
-          actions: <Widget>[
-            TextButton(
-                onPressed: () async {
-                  Get.back();
-                  final ProgressDialog pd =
-                      ProgressDialog(context, isDismissible: false);
-                  pd.show();
-                  final dataRepo =
-                      Provider.of<DataRepository>(context, listen: false);
-                  final Map<String, dynamic> response =
-                      await dataRepo.logout();
-                  if (response['success'] as bool) {
-                    final SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    prefs.remove(prefsTokenKey);
-                    prefs.remove(prefsUserKey);
-                    prefs.remove(prefsAlarmKey);
-                    pd.hide();
-                    OneSignal.shared.removeExternalUserId();
-                    Get.off(() => LoginScreen());
-                  }
-                },
-                child: const Text('Ya',
-                    style: TextStyle(
-                      color: Colors.blueAccent,
-                    ),),),
-            TextButton(
-                onPressed: () {
-                  Get.back();
-                },
-                child: const Text('Tidak',
-                    style: TextStyle(
-                      color: Colors.blueAccent,
-                    ),),),
-          ],);
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () async {
+              Get.back();
+              final ProgressDialog pd =
+              ProgressDialog(context, isDismissible: false);
+              pd.show();
+              final dataRepo =
+              Provider.of<DataRepository>(context, listen: false);
+              final Map<String, dynamic> response =
+              await dataRepo.logout();
+              if (response['success'] as bool) {
+                final SharedPreferences prefs =
+                await SharedPreferences.getInstance();
+                prefs.remove(prefsTokenKey);
+                prefs.remove(prefsUserKey);
+                prefs.remove(prefsAlarmKey);
+                pd.hide();
+                OneSignal.shared.removeExternalUserId();
+                Get.off(() => LoginPage());
+              }
+            },
+            child: const Text('Ya',
+              style: TextStyle(
+                color: Colors.blueAccent,
+              ),),),
+          TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: const Text('Tidak',
+              style: TextStyle(
+                color: Colors.blueAccent,
+              ),),),
+        ],);
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
@@ -136,11 +136,11 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
     if (value) {
       _presences.forEach(_setAlarm);
       showAlertDialog('success', 'Sukses', 'Berhasil mengaktifkan alarm!',
-          dismissible: true,);
+        dismissible: true,);
     } else {
       await flutterLocalNotificationsPlugin.cancelAll();
       showAlertDialog('success', 'Sukses', 'Berhasil menonaktifkan alarm!',
-          dismissible: true,);
+        dismissible: true,);
     }
   }
 
@@ -149,21 +149,21 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
     const dur1Day = Duration(days: 1);
     if (presence.startTime.isAfter(DateTime.now())) {
       scheduleAlarm(presence.startTime.subtract(dur10Min),
-          '${presence.codeType} akan dimulai dalam 10 menit!',);
+        '${presence.codeType} akan dimulai dalam 10 menit!',);
     } else {
       if (presence.startTime.weekday < DateTime.friday) {
         scheduleAlarm(presence.startTime.add(dur1Day),
-            '${presence.codeType} akan dimulai dalam 10 menit!',);
+          '${presence.codeType} akan dimulai dalam 10 menit!',);
       }
     }
 
     if (presence.endTime.isAfter(DateTime.now())) {
       scheduleAlarm(presence.endTime.subtract(dur10Min),
-          '${presence.codeType} akan selesai dalam 10 menit!',);
+        '${presence.codeType} akan selesai dalam 10 menit!',);
     } else {
       if (presence.endTime.weekday < DateTime.friday) {
         scheduleAlarm(presence.endTime.add(dur1Day),
-            '${presence.codeType} akan selesai dalam 10 menit!',);
+          '${presence.codeType} akan selesai dalam 10 menit!',);
       }
     }
   }
@@ -182,7 +182,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
   }
 
   Widget _buildStakeholderMenu() {
-    if (users.userDatas.value?.position != 'Camat') {
+    if (user?.position != 'Camat') {
       return sizedBox;
     }
 
@@ -192,9 +192,9 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
         const Text(
           'Atasan',
           style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 18.0,
-              color: Colors.blueAccent,),
+            fontWeight: FontWeight.w600,
+            fontSize: 18.0,
+            color: Colors.blueAccent,),
         ),
         dividerT1,
         sizedBoxH10,
@@ -300,7 +300,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
   }
 
   Widget _buildCutiSection() {
-    if (users.userDatas.value?.status == 'Honorer') {
+    if (user?.status == 'Honorer') {
       return sizedBox;
     }
     return Column(
@@ -354,9 +354,9 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
               const Text(
                 'Pengaturan & Personalisasi',
                 style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18.0,
-                    color: Colors.blueAccent,),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18.0,
+                  color: Colors.blueAccent,),
               ),
               dividerT1,
               sizedBoxH10,
@@ -385,9 +385,9 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
               const Text(
                 'Presensi',
                 style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18.0,
-                    color: Colors.blueAccent,),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18.0,
+                  color: Colors.blueAccent,),
               ),
               dividerT1,
               sizedBoxH10,
@@ -395,7 +395,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Get.to(() => ReportScreen(user: users.userDatas.value));
+                    Get.to(() => ReportScreen(user: user));
                   },
                   child: const ListTile(
                     leading: Icon(
@@ -468,9 +468,9 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
               const Text(
                 'Bantuan',
                 style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18.0,
-                    color: Colors.blueAccent,),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18.0,
+                  color: Colors.blueAccent,),
               ),
               dividerT1,
               Card(
@@ -524,9 +524,9 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
               const Text(
                 'Akun',
                 style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18.0,
-                    color: Colors.blueAccent,),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18.0,
+                  color: Colors.blueAccent,),
               ),
               dividerT1,
               Card(

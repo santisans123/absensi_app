@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildImageStack() {
     if (_images.isNotEmpty) {
       final widgets = _images
-          .sublist(0, 5)
+          .sublist(0, 1)
           .map(
             (e) => Padding(
           padding: const EdgeInsets.only(right: 4.0, top: 4.0),
