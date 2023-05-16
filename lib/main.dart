@@ -6,10 +6,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:spo_balaesang/api/api_provider.dart';
+import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/network/api.dart';
 import 'package:spo_balaesang/network/api_service.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
@@ -34,6 +37,9 @@ Future<void> main() async {
   //     },);
   // OneSignal.shared
   //     .setInFocusDisplayType(OSNotificationDisplayType.notification);
+  GetStorage.init();
+  Get.put(ApiProvider());
+  Get.put(UserData());
 
   const initializedSettingsAndroid =
       AndroidInitializationSettings('ic_stat_onesignal_default');

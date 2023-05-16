@@ -31,7 +31,7 @@ class ApplicationScreen extends StatefulWidget {
 }
 
 class _ApplicationScreenState extends State<ApplicationScreen> {
-  User user;
+  final UserData users = Get.find();
   bool _isAlarmActive = false;
   List<Presence> _presences;
 
@@ -54,8 +54,8 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
     }
 
     setState(() {
-      user = User.fromJson(json);
-      _presences = user.presences;
+      // user = User.fromJson(json);
+      _presences = users.userDatas.value.presences;
       _isAlarmActive = alarm;
       if (_isAlarmActive) {
         _presences.forEach(_setAlarm);
@@ -182,7 +182,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
   }
 
   Widget _buildStakeholderMenu() {
-    if (user?.position != 'Camat') {
+    if (users.userDatas.value?.position != 'Camat') {
       return sizedBox;
     }
 
@@ -300,7 +300,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
   }
 
   Widget _buildCutiSection() {
-    if (user?.status == 'Honorer') {
+    if (users.userDatas.value?.status == 'Honorer') {
       return sizedBox;
     }
     return Column(
@@ -395,7 +395,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Get.to(() => ReportScreen(user: user));
+                    Get.to(() => ReportScreen(user: users.userDatas.value));
                   },
                   child: const ListTile(
                     leading: Icon(

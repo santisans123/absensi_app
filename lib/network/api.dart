@@ -28,7 +28,7 @@ enum Endpoint {
 }
 
 class API {
-  final String host = FlutterConfig.get("BASE_URL").toString();
+  final String host = FlutterConfig.get("https://siap.sigarda.com/public").toString();
 
   String endpointUri(Endpoint endpoint) => '$host/api/${_paths[endpoint]}';
 

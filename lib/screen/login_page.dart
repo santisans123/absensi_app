@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:get_storage/get_storage.dart';
+import 'package:get/get.dart';
 
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
@@ -8,27 +10,34 @@ import 'package:http/http.dart' as http;
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spo_balaesang/api/api_provider.dart';
+import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/forgot_pass_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginPage extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginPageState extends State<LoginPage> {
   double getSmallDiameter = Get.width * 2 / 3;
 
   double getBigDiameter = Get.size.width * 7 / 8;
+
+  final ApiProvider apiProvider = Get.find();
+  final box = GetStorage();
 
   bool _isLoading = false;
 
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool isPasswordVisible = false;
+
+  final UserData users = Get.find();
 
   Widget _buildPhoneForm() {
     return TextFormField(
@@ -41,14 +50,14 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: _phoneController,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
-          focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.blueAccent),),
-          prefixIcon: Icon(
-            Icons.phone_android,
-            color: Colors.blueAccent[700],
-          ),
-          labelText: 'Nomor Telpon',
-          labelStyle: TextStyle(color: Colors.blueAccent[200]),),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.blueAccent),),
+        prefixIcon: Icon(
+          Icons.phone_android,
+          color: Colors.blueAccent[700],
+        ),
+        labelText: 'Nomor Telpon',
+        labelStyle: TextStyle(color: Colors.blueAccent[200]),),
       style: TextStyle(color: Colors.blueAccent[700]),
     );
   }
@@ -65,25 +74,25 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: _passwordController,
       keyboardType: TextInputType.text,
       decoration: InputDecoration(
-          focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.blueAccent),),
-          suffixIcon: GestureDetector(
-            onTap: () {
-              setState(() {
-                isPasswordVisible = !isPasswordVisible;
-              });
-            },
-            child: Icon(
-              isPasswordVisible ? Icons.visibility_off : Icons.visibility,
-              color: Colors.blueAccent[700],
-            ),
-          ),
-          prefixIcon: Icon(
-            Icons.lock_outline,
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.blueAccent),),
+        suffixIcon: GestureDetector(
+          onTap: () {
+            setState(() {
+              isPasswordVisible = !isPasswordVisible;
+            });
+          },
+          child: Icon(
+            isPasswordVisible ? Icons.visibility_off : Icons.visibility,
             color: Colors.blueAccent[700],
           ),
-          labelText: 'Password',
-          labelStyle: TextStyle(color: Colors.blueAccent[200]),),
+        ),
+        prefixIcon: Icon(
+          Icons.lock_outline,
+          color: Colors.blueAccent[700],
+        ),
+        labelText: 'Password',
+        labelStyle: TextStyle(color: Colors.blueAccent[200]),),
       style: TextStyle(color: Colors.blueAccent[700]),
     );
   }
@@ -113,9 +122,9 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                    colors: [Colors.lightBlue[200], Colors.blueAccent],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,),
+                  colors: [Colors.lightBlue[200], Colors.blueAccent],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,),
               ),
             ),
           ),
@@ -128,9 +137,9 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                    colors: [Colors.blueAccent[700], Colors.blueAccent],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,),
+                  colors: [Colors.blueAccent[700], Colors.blueAccent],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -174,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: InkWell(
                       onTap: () {
                         Get.to(() => ForgotPassScreen(),
-                            fullscreenDialog: true,);
+                          fullscreenDialog: true,);
                       },
                       child: Text(
                         'Lupa Password?',
@@ -195,12 +204,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10.0),
                             gradient: LinearGradient(
-                                colors: [
-                                  Colors.lightBlue[700],
-                                  Colors.lightBlue[900]
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,),
+                              colors: [
+                                Colors.lightBlue[700],
+                                Colors.lightBlue[900]
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,),
                           ),
                           child: Material(
                             color: Colors.transparent,
@@ -210,83 +219,51 @@ class _LoginScreenState extends State<LoginScreen> {
                               onTap: _isLoading
                                   ? null
                                   : () async {
-                                      final SharedPreferences prefs =
-                                          await SharedPreferences.getInstance();
-                                      setState(() {
-                                        _isLoading = true;
-                                      });
-                                      print("phone: ${_phoneController.value.text}\n pw: ${_passwordController.value.text}");
-                                      final String deviceName =
-                                          await getDeviceInfo();
-                                      final Map<String, dynamic> data =
-                                          <String, dynamic>{
-                                        'phone': _phoneController.value.text,
-                                        'password':
-                                            _passwordController.value.text,
-                                        'device_name': deviceName
-                                      };
-                                      try {
-                                        final dataRepository =
-                                            Provider.of<DataRepository>(context,
-                                                listen: true,);
-                                        final http.Response response =
-                                            await dataRepository.login(data);
-                                        final Map<String, dynamic> result =
-                                            jsonDecode(response.body)
-                                                as Map<String, dynamic>;
-                                        print(response.body);
-                                        if (response.statusCode == 200) {
-                                          prefs.setString(
-                                              prefsTokenKey,
-                                              jsonEncode(result[jsonDataField]
-                                                  [prefsTokenKey],),);
-                                          prefs.setString(
-                                              prefsUserKey,
-                                              jsonEncode(
-                                                  result[jsonDataField],),);
-                                          OneSignal.shared.setExternalUserId(
-                                              result[jsonDataField][userIdField]
-                                                  .toString(),);
-                                          Get.off(() => BottomNavScreen());
-                                        } else {
-                                          showErrorDialog(result);
-                                        }
-                                      } on SocketException catch (e) {
-                                        showErrorDialog({
-                                          'message': 'Kesalahan',
-                                          'errors': {
-                                            'exception': [e.message]
-                                          }
-                                        });
-                                      } catch (e) {
-                                        showErrorDialog({
-                                          'message': 'Kesalahan',
-                                          'errors': {
-                                            'exception': ['Terjadi kesalahan!']
-                                          }
-                                        });
-                                      } finally {
-                                        setState(() {
-                                          _isLoading = false;
-                                        });
-                                      }
-                                    },
+                                final String deviceName =
+                                await getDeviceInfo();
+                                apiProvider.login({
+                                  'phone': _phoneController.value.text,
+                                  'password':
+                                  _passwordController.value.text,
+                                  'device_name': deviceName
+                                }).then((response) {
+                                  print("respon: ${response.statusCode} | ${response.body}");
+                                  if (response.statusCode == 200 &&
+                                      true == response.body['success']) {
+                                    box.write('token', response.body['data']['token']);
+                                    box.write('login', true);
+
+                                    setState(() {
+                                      users.setUserData(response.body['data']);
+                                      print(users.userDatas.value);
+                                    });
+
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => BottomNavScreen()),
+                                          (Route<dynamic> route) => false,
+                                    );
+                                  } else {
+                                    Get.snackbar('Info', 'Gagal login');
+                                  }
+                                });
+                              },
                               child: Center(
                                 child: _isLoading
                                     ? const SizedBox(
-                                        height: 30.0,
-                                        width: 30.0,
-                                        child: CircularProgressIndicator(
-                                          valueColor: AlwaysStoppedAnimation(
-                                              Colors.white,),
-                                        ),
-                                      )
+                                  height: 30.0,
+                                  width: 30.0,
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation(
+                                      Colors.white,),
+                                  ),
+                                )
                                     : const Text(
-                                        'MASUK',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w600,),
-                                      ),
+                                  'MASUK',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,),
+                                ),
                               ),
                             ),
                           ),
@@ -301,16 +278,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text(
                       'v5.0.3',
                       style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.w500,),
+                        color: Colors.grey,
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w500,),
                     ),
                     Text(
                       'Sistem Absensi Pegawai Online by Banua Coders ',
                       style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.w500,),
+                        color: Colors.grey,
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w500,),
                     )
                   ],
                 ),

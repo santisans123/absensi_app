@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/network/api.dart';
@@ -10,13 +11,15 @@ class ApiService {
   ApiService({@required this.api});
 
   final API api;
+  final box = GetStorage();
   String token = '';
 
   Future<void> _getToken() async {
-    final SharedPreferences localStorage =
-        await SharedPreferences.getInstance();
-
-    token = jsonDecode(localStorage.getString(prefsTokenKey)) as String;
+    // final SharedPreferences localStorage =
+    //     await SharedPreferences.getInstance();
+    //
+    // token = jsonDecode(localStorage.getString(prefsTokenKey)) as String;
+    token  = box.read('token');
   }
 
   Future<Map<String, dynamic>> getEndpointData(

@@ -34,7 +34,6 @@ dependencies:
   geocoding: ^2.0.0
   progress_dialog: ^1.2.4
   shimmer: ^2.0.0-nullsafety.0
-  get: ^4.1.1
   flare_flutter: ^3.0.0
   introduction_screen: ^3.1.8
   flutter_launcher_icons: ^0.13.1
@@ -49,6 +48,8 @@ dependencies:
   timeline_tile: 2.0.0
   search_page: ^2.3.0
   location: ^4.4.0
+  get: ^4.6.5
+  get_storage: ^2.0.3
   flutter: 
     sdk: flutter
 
