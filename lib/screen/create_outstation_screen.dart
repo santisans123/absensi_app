@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -26,7 +27,7 @@ class CreateOutstationScreen extends StatefulWidget {
 class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
   String _base64Image;
   String _fileName;
-  File _tmpFile;
+  XFile _tmpFile;
   DateTime _dueDate = DateTime.now();
   DateTime _startDate = DateTime.now();
   bool _isDateChange = false;
@@ -35,15 +36,22 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
   final TextEditingController _descriptionController = TextEditingController();
 
   Future<void> _openCamera() async {
-    final picture = await ImagePicker().getImage(source: ImageSource.camera);
-    final file = await compressAndGetFile(File(picture.path),
-        '/storage/emulated/0/Android/data/com.banuacoders.siap/files/Pictures/images.jpg',);
-    setState(() {
-      _tmpFile = file;
-      _base64Image = base64Encode(_tmpFile.readAsBytesSync());
-      _fileName = _tmpFile.path.split('/').last;
-    });
-    await file.delete(recursive: true);
+    try {
+      var picture = await ImagePicker().pickImage(source: ImageSource.camera);
+      _tmpFile = picture;
+      _base64Image = base64Encode(await _tmpFile.readAsBytes());
+      setState(() {
+        _fileName = _tmpFile.path.split('/').last;
+      });
+      // await picture.delete(recursive: true);
+      if(picture == null) return;
+
+      final imageTemp = XFile(picture.path);
+
+      setState(() => picture = imageTemp);
+    } on PlatformException catch(e) {
+      print('Failed to pick image: $e');
+    }
   }
 
   Future<void> _uploadData() async {
