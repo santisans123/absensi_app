@@ -2,10 +2,10 @@ name: spo_balaesang
 version: 2.0.0+1
 publish_to: none
 description: Sistem presensi online kantor pemerintahan kecamatan balaesang.
-environment: 
+environment:
   sdk: '>=2.7.0 <3.0.0'
 
-dependencies: 
+dependencies:
   font_awesome_flutter: ^10.4.0
   flutter_cupertino_datetime_picker: ^3.0.0
   percent_indicator: ^4.2.3
@@ -21,7 +21,7 @@ dependencies:
   device_info: ^2.0.1
   auto_size_text: ^3.0.0-nullsafety.0
   geolocator: ^9.0.2
-#  android_intent: ^2.0.0
+  #  android_intent: ^2.0.0
   app_settings: ^4.1.0
   flutter_config: any
   camera: ^0.10.5
@@ -50,14 +50,14 @@ dependencies:
   location: ^4.4.0
   get: ^4.6.5
   get_storage: ^2.0.3
-  flutter: 
+  flutter:
     sdk: flutter
 
-dev_dependencies: 
-  flutter_test: 
+dev_dependencies:
+  flutter_test:
     sdk: flutter
 
-flutter_icons: 
+flutter_icons:
   image_path_ios: assets/launcher/icon.png
   image_path_android: assets/launcher/icon.png
   adaptive_icon_background: assets/launcher/launcher_bg.png
@@ -65,15 +65,14 @@ flutter_icons:
   ios: true
   android: true
 
-flutter_native_splash: 
+flutter_native_splash:
   image: assets/launcher/icon.png
   color: 6b8eef
   android_disable_fullscreen: true
 
-flutter: 
+flutter:
   assets:
     - assets/logo/
     - assets/flare/
     - assets/launcher/
   uses-material-design: true
-
