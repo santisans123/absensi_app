@@ -2,20 +2,20 @@ import 'package:spo_balaesang/utils/app_const.dart';
 
 class Yearly {
   const Yearly({
-    this.attendancePercentage,
-    this.outstation,
-    this.absent,
-    this.lateCount,
-    this.absentPermission,
-    this.leaveEarlyCount,
-    this.earlyLunchBreakCount,
-    this.notComeAfterLunchBreakCount,
-    this.notMorningParadeCount,
-    this.annualLeave,
-    this.importantReasonLeave,
-    this.sickLeave,
-    this.maternityLeave,
-    this.outOfLiabilityLeave,
+    required this.attendancePercentage,
+    required this.outstation,
+    required this.absent,
+    required this.lateCount,
+    required this.absentPermission,
+    required this.leaveEarlyCount,
+    required this.earlyLunchBreakCount,
+    required this.notComeAfterLunchBreakCount,
+    required this.notMorningParadeCount,
+    required this.annualLeave,
+    required this.importantReasonLeave,
+    required this.sickLeave,
+    required this.maternityLeave,
+    required this.outOfLiabilityLeave,
   });
 
   final double attendancePercentage;

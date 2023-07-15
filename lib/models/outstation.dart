@@ -3,15 +3,15 @@ import 'package:spo_balaesang/utils/app_const.dart';
 
 class Outstation {
   const Outstation(
-      {this.id,
-      this.title,
-      this.description,
-      this.isApproved,
-      this.photo,
-      this.approvalStatus,
-      this.dueDate,
-      this.startDate,
-      this.user,});
+      {required this.id,
+        required this.title,
+        required this.description,
+        required this.isApproved,
+        required this.photo,
+        required this.approvalStatus,
+        required this.dueDate,
+        required this.startDate,
+        required this.user,});
 
   final int id;
   final String title;

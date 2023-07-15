@@ -9,7 +9,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:progress_dialog/progress_dialog.dart';
+import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/holiday.dart';
 import 'package:spo_balaesang/models/presence.dart';
@@ -27,7 +27,9 @@ import 'package:spo_balaesang/widgets/user_info_card_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class ReportScreen extends StatefulWidget {
-  const ReportScreen({this.user, this.isApproval = false});
+  const ReportScreen({
+    required this.user,
+    this.isApproval = false});
 
   final User user;
   final bool isApproval;
@@ -37,17 +39,17 @@ class ReportScreen extends StatefulWidget {
 }
 
 class _ReportScreenState extends State<ReportScreen> {
-  AbsentReport _absentReport;
+  late AbsentReport _absentReport;
   bool _isLoading = false;
-  bool _isApproval;
-  DataRepository _dataRepo;
-  DateTime _year;
+  late bool _isApproval;
+  late DataRepository _dataRepo;
+  late DateTime _year;
   DateTime _selectedDate = DateTime.now();
   final Map<DateTime, List<dynamic>> _events = {};
-  List<DailyData> _selectedEvents;
-  List<Holiday> _selectedHolidays;
+  late List<DailyData> _selectedEvents;
+  late List<Holiday> _selectedHolidays;
   final Map<DateTime, List<dynamic>> _holidays = {};
-  User _user;
+  late User _user;
   final TextEditingController _salaryController = TextEditingController();
   double _salary = 0;
   final TextEditingController _reasonController = TextEditingController();
@@ -101,7 +103,7 @@ class _ReportScreenState extends State<ReportScreen> {
     });
   }
 
-  Color _checkAttendancePercentageColor(double percentage) {
+  Color? _checkAttendancePercentageColor(double percentage) {
     if (percentage >= 25 && percentage < 50) {
       return Colors.yellow[800];
     }
@@ -121,13 +123,13 @@ class _ReportScreenState extends State<ReportScreen> {
 
   Widget _buildUserInfoSection() {
     return UserInfoCardWidget(
-      name: _user?.name,
-      status: _user?.status,
-      group: _user?.group,
-      rank: _user?.rank,
-      department: _user?.department,
-      nip: _user?.nip,
-      position: _user?.position,
+      name: _user!.name,
+      status: _user!.status,
+      group: _user!.group,
+      rank: _user!.rank,
+      department: _user!.department,
+      nip: _user!.nip,
+      position: _user!.position,
     );
   }
 
@@ -135,7 +137,7 @@ class _ReportScreenState extends State<ReportScreen> {
     return StatisticCard(
       report: report,
       year: year,
-      status: _user?.status,
+      status: _user!.status,
     );
   }
 
@@ -533,7 +535,7 @@ class _ReportScreenState extends State<ReportScreen> {
 
     return Column(
       children: _selectedEvents.map((event) {
-        final Color color = checkStatusColor(event.attendStatus);
+        final Color? color = checkStatusColor(event.attendStatus);
         String status = event.attendStatus ?? '';
         if (event.attendStatus == 'Terlambat') {
           final duration = calculateLateTime(event.startTime, event.attendTime);

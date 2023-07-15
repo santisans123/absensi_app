@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:get_storage/get_storage.dart';
 // import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -20,12 +20,13 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool _isLoggedIn = false;
-  bool _isFirstSeen;
+  late bool _isFirstSeen;
+  final box = GetStorage();
 
   Future<void> _askPermission() async {
     try {
       final PermissionStatus locationPerms =
-          await Permission.locationWhenInUse.status;
+      await Permission.locationWhenInUse.status;
       if (locationPerms != PermissionStatus.granted) {
         await Permission.locationWhenInUse.request();
       }
@@ -46,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
 
       final PermissionStatus notificationPerms =
-          await Permission.notification.status;
+      await Permission.notification.status;
       if (notificationPerms != PermissionStatus.granted) {
         await Permission.notification.request();
       }
@@ -71,7 +72,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkIfLoggedIn() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString(prefsTokenKey);
+    final String? token = prefs.getString(prefsTokenKey);
     if (token != null) {
       setState(() {
         _isLoggedIn = true;
@@ -83,9 +84,9 @@ class _SplashScreenState extends State<SplashScreen> {
     final Widget page = _isLoggedIn ? BottomNavScreen() : LoginPage();
     if (_isFirstSeen) {
       Get.off<Widget>(() => page,
-          transition: Transition.rightToLeftWithFade,
-          curve: Curves.easeIn,
-          duration: const Duration(milliseconds: 500),);
+        transition: Transition.rightToLeftWithFade,
+        curve: Curves.easeIn,
+        duration: const Duration(milliseconds: 500),);
     } else {
       Get.off<Widget>(() => OnBoardingScreen(page: page));
     }
@@ -110,7 +111,7 @@ class _SplashScreenState extends State<SplashScreen> {
           TextButton(
             onPressed: () async {
               final serviceEnabled =
-                  await location.Location().requestService();
+              await location.Location().requestService();
               if (!serviceEnabled) {
                 // const AndroidIntent intent = AndroidIntent(
                 //     action: 'android.settings.LOCATION_SOURCE_SETTINGS',);
@@ -119,18 +120,18 @@ class _SplashScreenState extends State<SplashScreen> {
               Get.back();
             },
             child: const Text('OK',
-                style: TextStyle(
-                  color: Colors.blueAccent,
-                ),),
+              style: TextStyle(
+                color: Colors.blueAccent,
+              ),),
           ),
           TextButton(
             onPressed: () {
               Get.back();
             },
             child: const Text('TIDAK',
-                style: TextStyle(
-                  color: Colors.blueAccent,
-                ),),
+              style: TextStyle(
+                color: Colors.blueAccent,
+              ),),
           ),
         ],
       );
@@ -153,10 +154,10 @@ class _SplashScreenState extends State<SplashScreen> {
       height: Get.height,
       width: Get.width,
       decoration: const BoxDecoration(
-          gradient: LinearGradient(colors: <Color>[
-        Color(0xFF6B8EEF),
-        Color(0xFF0C2979),
-      ], begin: Alignment.topCenter, end: Alignment.bottomCenter,),),
+        gradient: LinearGradient(colors: <Color>[
+          Color(0xFF6B8EEF),
+          Color(0xFF0C2979),
+        ], begin: Alignment.topCenter, end: Alignment.bottomCenter,),),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Stack(
@@ -174,7 +175,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   const Text(
                     'SiAP Balaesang',
                     style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w700,),
+                      color: Colors.white, fontWeight: FontWeight.w700,),
                   )
                 ],
               ),
@@ -194,9 +195,9 @@ class _SplashScreenState extends State<SplashScreen> {
                     children: const <Widget>[
                       Spacer(),
                       Text('SiAP Balaesang',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,),),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,),),
                       SizedBox(width: 2.0),
                       Text('v5.0.3', style: TextStyle(color: Colors.white)),
                       Spacer()

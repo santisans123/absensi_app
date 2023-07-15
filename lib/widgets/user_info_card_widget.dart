@@ -3,13 +3,13 @@ import 'package:spo_balaesang/utils/app_const.dart';
 
 class UserInfoCardWidget extends StatelessWidget {
   const UserInfoCardWidget(
-      {this.status,
-      this.name,
-      this.position,
-      this.rank,
-      this.group,
-      this.nip,
-      this.department,});
+      {required this.status,
+        required this.name,
+        required this.position,
+        required this.rank,
+        required this.group,
+        required this.nip,
+        required this.department,});
 
   final String status;
   final String name;

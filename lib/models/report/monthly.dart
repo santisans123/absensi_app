@@ -2,12 +2,12 @@ import 'package:spo_balaesang/utils/app_const.dart';
 
 class Monthly {
   const Monthly(
-      {this.lateCount,
-      this.attendancePercentage,
-      this.leaveEarlyCount,
-      this.notMorningParadeCount,
-      this.earlyLunchBreakCount,
-      this.notComeAfterLunchBreakCount,});
+      {required this.lateCount,
+        required this.attendancePercentage,
+        required this.leaveEarlyCount,
+        required this.notMorningParadeCount,
+        required this.earlyLunchBreakCount,
+        required this.notComeAfterLunchBreakCount,});
 
   final double attendancePercentage;
   final int lateCount;

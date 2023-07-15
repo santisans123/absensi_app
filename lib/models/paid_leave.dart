@@ -3,16 +3,16 @@ import 'package:spo_balaesang/utils/app_const.dart';
 
 class PaidLeave {
   const PaidLeave(
-      {this.title,
-      this.id,
-      this.category,
-      this.photo,
-      this.approvalStatus,
-      this.description,
-      this.startDate,
-      this.dueDate,
-      this.isApproved,
-      this.user,});
+      {required this.title,
+        required this.id,
+        required this.category,
+        required this.photo,
+        required this.approvalStatus,
+        required this.description,
+        required this.startDate,
+        required this.dueDate,
+        required this.isApproved,
+        required this.user,});
 
   final int id;
   final String title;

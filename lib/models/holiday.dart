@@ -1,7 +1,10 @@
 import 'package:spo_balaesang/utils/app_const.dart';
 
 class Holiday {
-  const Holiday({this.date, this.name, this.description});
+  const Holiday({
+    required this.date,
+    required this.name,
+    required this.description});
 
   final DateTime date;
   final String name;

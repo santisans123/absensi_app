@@ -8,13 +8,16 @@ import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
 class StatisticCard extends StatelessWidget {
-  const StatisticCard({this.report, this.year, this.status});
+  const StatisticCard({
+    required this.report,
+    required this.year,
+    required this.status});
 
   final AbsentReport report;
   final DateTime year;
   final String status;
 
-  Color _checkAttendancePercentageColor(double percentage) {
+  Color? _checkAttendancePercentageColor(double percentage) {
     if (percentage >= 25 && percentage < 50) {
       return Colors.yellow[800];
     }
@@ -37,8 +40,8 @@ class StatisticCard extends StatelessWidget {
     return CircularPercentIndicator(
       radius: Get.width * 0.3,
       linearGradient: LinearGradient(colors: <Color>[
-        _checkAttendancePercentageColor(percentage).withOpacity(1),
-        _checkAttendancePercentageColor(percentage).withOpacity(0.5)
+        _checkAttendancePercentageColor(percentage)!.withOpacity(1),
+        _checkAttendancePercentageColor(percentage)!.withOpacity(0.5)
       ],),
       animation: true,
       header: Text('${suffix[0].toUpperCase()}${suffix.substring(1)}'),
@@ -47,7 +50,7 @@ class StatisticCard extends StatelessWidget {
       lineWidth: 10.0,
       circularStrokeCap: CircularStrokeCap.round,
       backgroundColor:
-          _checkAttendancePercentageColor(percentage).withOpacity(0.2),
+          _checkAttendancePercentageColor(percentage)!.withOpacity(0.2),
       center: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -172,7 +175,7 @@ class StatisticCard extends StatelessWidget {
               )
             ],
           ),
-          Colors.red[800],
+          Colors.red[800]!,
           Get.width * 0.85,
         ),
         sizedBoxH20,
@@ -201,7 +204,7 @@ class StatisticCard extends StatelessWidget {
                     )
                   ],
                 ),
-                Colors.indigo[300],
+                Colors.indigo[300]!,
                 Get.width * 0.4,),
             _buildLinearPercentage(
                 double.parse(report
@@ -226,7 +229,7 @@ class StatisticCard extends StatelessWidget {
                     )
                   ],
                 ),
-                Colors.pink[400],
+                Colors.pink[400]!,
                 Get.width * 0.4,),
           ],
         ),
@@ -256,7 +259,7 @@ class StatisticCard extends StatelessWidget {
                     )
                   ],
                 ),
-                Colors.green[300],
+                Colors.green[300]!,
                 Get.width * 0.4,),
             _buildLinearPercentage(
                 double.parse(report
@@ -280,7 +283,7 @@ class StatisticCard extends StatelessWidget {
                     )
                   ],
                 ),
-                Colors.orange[300],
+                Colors.orange[300]!,
                 Get.width * 0.4,),
           ],
         ),
@@ -349,7 +352,7 @@ class StatisticCard extends StatelessWidget {
                     )
                   ],
                 ),
-                Colors.red[800],
+                Colors.red[800]!,
                 Get.width * 0.85,
               ),
               sizedBoxH20,
@@ -379,7 +382,7 @@ class StatisticCard extends StatelessWidget {
                           )
                         ],
                       ),
-                      Colors.blueAccent[400],
+                      Colors.blueAccent[400]!,
                       Get.width * 0.4,),
                   _buildLinearPercentage(
                       double.parse(report
@@ -403,7 +406,7 @@ class StatisticCard extends StatelessWidget {
                           )
                         ],
                       ),
-                      Colors.deepOrange[600],
+                      Colors.deepOrange[600]!,
                       Get.width * 0.4,),
                 ],
               ),

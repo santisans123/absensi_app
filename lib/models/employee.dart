@@ -3,17 +3,17 @@ import 'package:spo_balaesang/utils/app_const.dart';
 
 class Employee {
   const Employee(
-      {this.id,
-      this.nip,
-      this.name,
-      this.phone,
-      this.gender,
-      this.department,
-      this.status,
-      this.position,
-      this.presences,
-      this.rank,
-      this.group,});
+      {required this.id,
+      required this.nip,
+      required this.name,
+      required this.phone,
+      required this.gender,
+      required this.department,
+      required this.status,
+      required this.position,
+      required this.presences,
+      required this.rank,
+      required this.group,});
 
   final int id;
   final String nip;

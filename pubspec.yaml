@@ -3,7 +3,7 @@ version: 2.0.0+1
 publish_to: none
 description: Sistem presensi online kantor pemerintahan kecamatan balaesang.
 environment: 
-  sdk: '>=2.7.0 <3.0.0'
+  sdk: '>=2.12.0-0 <3.0.7'
 
 dependencies: 
   font_awesome_flutter: ^10.4.0
@@ -32,7 +32,7 @@ dependencies:
   flutter_countdown_timer: ^4.0.2
   image_picker: ^0.8.7+4
   geocoding: ^2.0.0
-  progress_dialog: ^1.2.4
+  progress_dialog_null_safe: ^1.0.7
   shimmer: ^2.0.0-nullsafety.0
   flare_flutter: ^3.0.0
   introduction_screen: ^3.1.8
@@ -50,6 +50,7 @@ dependencies:
   location: ^4.4.0
   get: ^4.6.5
   get_storage: ^2.0.3
+  dropdown_button2: ^2.0.0
   flutter: 
     sdk: flutter
 
@@ -75,5 +76,6 @@ flutter:
     - assets/logo/
     - assets/flare/
     - assets/launcher/
+    - assets/images/
   uses-material-design: true
 

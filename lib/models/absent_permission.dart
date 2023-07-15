@@ -3,15 +3,15 @@ import 'package:spo_balaesang/utils/app_const.dart';
 
 class AbsentPermission {
   const AbsentPermission(
-      {this.id,
-      this.title,
-      this.dueDate,
-      this.startDate,
-      this.description,
-      this.photo,
-      this.approvalStatus,
-      this.isApproved,
-      this.user,});
+      {required this.id,
+      required this.title,
+      required this.dueDate,
+      required this.startDate,
+      required this.description,
+      required this.photo,
+      required this.approvalStatus,
+      required this.isApproved,
+      required this.user,});
 
   final int id;
   final String title;

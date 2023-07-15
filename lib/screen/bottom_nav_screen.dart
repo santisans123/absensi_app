@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:spo_balaesang/screen/application_screen.dart';
 import 'package:spo_balaesang/screen/home_page.dart';
 import 'package:spo_balaesang/screen/home_screen.dart';
+import 'package:spo_balaesang/screen/project/project_screen.dart';
+import 'package:spo_balaesang/screen/todo_list/personal/todo_list_personal.dart';
 
 class BottomNavScreen extends StatefulWidget {
   @override
@@ -9,11 +11,13 @@ class BottomNavScreen extends StatefulWidget {
 }
 
 class _BottomNavScreenState extends State<BottomNavScreen> {
-  final List<Widget> _screens = [HomePage(), ApplicationScreen()];
+  final List<Widget> _screens = [HomePage(), TodoListPersonal(), ProjectScreen(), ApplicationScreen()];
   int _currentIndex = 0;
 
   final Map<String, dynamic> _bottomNavItems = {
     'Beranda': Icons.home_filled,
+    'ToDoList': Icons.list,
+    'Project': Icons.folder,
     'Aplikasi': Icons.apps_rounded,
   };
 

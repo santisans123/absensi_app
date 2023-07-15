@@ -5,7 +5,11 @@ import 'package:spo_balaesang/utils/view_util.dart';
 
 class EmployeeProposalInfoWidget extends StatelessWidget {
   const EmployeeProposalInfoWidget(
-      {this.title, this.label, this.startDate, this.dueDate,});
+      {
+        required this.title,
+        required this.label,
+        required this.startDate,
+        required this.dueDate,});
 
   final String label;
   final DateTime startDate;

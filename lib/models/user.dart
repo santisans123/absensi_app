@@ -13,22 +13,22 @@ class UserData extends GetxController {
 
 class User {
   const User(
-      {this.id,
-        this.nip,
-        this.name,
-        this.phone,
-        this.gender,
-        this.department,
-        this.status,
-        this.position,
-        this.unreadNotification,
-        this.token,
-        this.nextPresence,
-        this.presences,
-        this.holiday,
-        this.isWeekend,
-        this.rank,
-        this.group,});
+      {required this.id,
+        required this.nip,
+        required this.name,
+        required this.phone,
+        required this.gender,
+        required this.department,
+        required this.status,
+        required this.position,
+        required this.unreadNotification,
+        required this.token,
+        required this.nextPresence,
+        required this.presences,
+        required this.holiday,
+        required this.isWeekend,
+        required this.rank,
+        required this.group,});
 
   final int id;
   final String nip;

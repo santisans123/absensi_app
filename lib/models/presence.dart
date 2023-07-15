@@ -3,15 +3,15 @@ import 'package:spo_balaesang/utils/app_const.dart';
 
 class Presence {
   const Presence(
-      {this.id,
-      this.date,
-      this.codeType,
-      this.status,
-      this.attendTime,
-      this.location,
-      this.photo,
-      this.startTime,
-      this.endTime,});
+      {required this.id,
+        required this.date,
+        required this.codeType,
+        required this.status,
+        required this.attendTime,
+        required this.location,
+        required this.photo,
+        required this.startTime,
+        required this.endTime,});
 
   final int id;
   final DateTime date;

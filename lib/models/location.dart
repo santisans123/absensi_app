@@ -1,7 +1,10 @@
 import 'package:spo_balaesang/utils/app_const.dart';
 
 class Location {
-  const Location({this.latitude, this.longitude, this.address});
+  const Location({
+    required this.latitude,
+    required this.longitude,
+    required this.address});
 
   final double latitude;
   final double longitude;

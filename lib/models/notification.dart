@@ -2,11 +2,11 @@ import 'package:spo_balaesang/utils/app_const.dart';
 
 class UserNotification {
   const UserNotification(
-      {this.id,
-      this.notifiableId,
-      this.notifiableType,
-      this.data,
-      this.isRead,});
+      {required this.id,
+      required this.notifiableId,
+      required this.notifiableType,
+      required this.data,
+      required this.isRead,});
 
   final String id;
   final int notifiableId;

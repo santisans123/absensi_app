@@ -2,7 +2,10 @@ import 'package:spo_balaesang/models/location.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 
 class Daily {
-  const Daily({this.date, this.attendancePercentage, this.attendances});
+  const Daily({
+    required this.date,
+    required this.attendancePercentage,
+    required this.attendances});
 
   final DateTime date;
   final double attendancePercentage;
@@ -24,16 +27,16 @@ class Daily {
 
 class DailyData {
   const DailyData(
-      {this.id,
-      this.date,
-      this.location,
-      this.attendType,
-      this.attendTime,
-      this.attendStatus,
-      this.startTime,
-      this.endTime,
-      this.address,
-      this.photo,});
+      {required this.id,
+        required this.date,
+        required this.location,
+        required this.attendType,
+        required this.attendTime,
+        required this.attendStatus,
+        required this.startTime,
+        required this.endTime,
+        required this.address,
+        required this.photo,});
 
   final int id;
   final String date;

@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 
 class ImagePlaceholderWidget extends StatelessWidget {
-  const ImagePlaceholderWidget({this.label, this.child});
+  const ImagePlaceholderWidget({
+    required this.label,
+    required this.child});
 
   final String label;
   final Widget child;
@@ -16,7 +18,7 @@ class ImagePlaceholderWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.grey[100],
           borderRadius: BorderRadius.circular(20.0),
-          border: Border.all(color: Colors.grey[400]),
+          border: Border.all(color: Colors.grey),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

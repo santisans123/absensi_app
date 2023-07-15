@@ -7,7 +7,7 @@ import 'package:introduction_screen/introduction_screen.dart';
 import 'package:spo_balaesang/utils/extensions.dart';
 
 Future showAlertDialog(String type, String title, String content,
-    {bool dismissible,}) async {
+    {required bool dismissible,}) async {
   final List<Widget> actions = type == 'success'
       ? []
       : [
@@ -95,7 +95,7 @@ Color percentageLabelColor(double percentage) {
   return Colors.white;
 }
 
-Color checkStatusColor(String status) {
+Color? checkStatusColor(String status) {
   switch (status) {
     case 'Tidak Hadir':
       return Colors.red[800];
@@ -221,7 +221,7 @@ Widget dowBuilder(BuildContext context, DateTime date) {
   );
 }
 
-Widget holidayBuilder(DateTime date, {bool isNotEmpty}) {
+Widget holidayBuilder(DateTime date, {required bool isNotEmpty}) {
   TextStyle style = const TextStyle(color: Colors.black);
   if (isNotEmpty || date.isWeekend()) {
     style = const TextStyle(color: Colors.red);

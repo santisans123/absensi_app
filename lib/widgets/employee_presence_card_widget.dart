@@ -10,16 +10,17 @@ import 'package:spo_balaesang/widgets/image_placeholder_widget.dart';
 
 class EmployeePresenceCardWidget extends StatelessWidget {
   const EmployeePresenceCardWidget(
-      {this.presenceType,
-      this.attendTime,
-      this.status,
-      this.address,
-      this.photo,
-      this.heroTag,
-      this.isApprovalCard = false,
-      this.buttonWidget,
-      this.point,
-      this.color,});
+      {
+        required this.presenceType,
+        required this.attendTime,
+        required this.status,
+        required this.address,
+        required this.photo,
+        required this.heroTag,
+        this.isApprovalCard = false,
+        required this.buttonWidget,
+        required this.point,
+        required this.color,});
 
   final String presenceType;
   final String point;

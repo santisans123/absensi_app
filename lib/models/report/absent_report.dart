@@ -6,11 +6,11 @@ import 'package:spo_balaesang/utils/app_const.dart';
 
 class AbsentReport {
   const AbsentReport(
-      {this.daily,
-      this.monthly,
-      this.yearly,
-      this.holidays,
-      this.totalWorkDay,});
+      {required this.daily,
+        required this.monthly,
+        required this.yearly,
+        required this.holidays,
+        required this.totalWorkDay,});
 
   final List<Daily> daily;
   final Monthly monthly;

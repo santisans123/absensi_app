@@ -10,20 +10,21 @@ import 'package:spo_balaesang/widgets/image_placeholder_widget.dart';
 
 class EmployeeProposalWidget extends StatelessWidget {
   const EmployeeProposalWidget(
-      {this.title,
-      this.isApproved,
-      this.employeeName,
-      this.approvalStatus,
-      this.isApprovalCard = false,
-      this.isPaidLeave = false,
-      this.startDate,
-      this.dueDate,
-      this.description,
-      this.category,
-      this.photo,
-      this.updateWidget,
-      this.heroTag,
-      this.button,});
+      {
+        required this.title,
+        required this.isApproved,
+        required this.employeeName,
+        required this.approvalStatus,
+        this.isApprovalCard = false,
+        this.isPaidLeave = false,
+        required this.startDate,
+        required this.dueDate,
+        required this.description,
+        required this.category,
+        required this.photo,
+        required this.updateWidget,
+        required this.heroTag,
+        required this.button,});
 
   final String title;
   final bool isApproved;
@@ -40,7 +41,7 @@ class EmployeeProposalWidget extends StatelessWidget {
   final Widget button;
   final Widget updateWidget;
 
-  Color _checkStatusColor(String status) {
+  Color? _checkStatusColor(String status) {
     switch (status) {
       case 'Disetujui':
         return Colors.green;

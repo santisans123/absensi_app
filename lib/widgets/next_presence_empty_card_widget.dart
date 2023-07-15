@@ -5,18 +5,18 @@ import 'package:spo_balaesang/utils/app_const.dart';
 
 class NextPresenceEmptyCardWidget extends StatelessWidget {
   const NextPresenceEmptyCardWidget(
-      {this.topLabel,
-      this.trailingLabel,
-      this.firstLabel,
-      this.firstContent,
-      this.secondLabel,
-      this.secondContent,
-      this.thirdLabel,
-      this.thirdContent,
-      this.fourthLabel,
-      this.fourthContent,
-      this.color,
-      this.trailingTop,});
+      {required this.topLabel,
+        required this.trailingLabel,
+        required this.firstLabel,
+        required this.firstContent,
+        required this.secondLabel,
+        required this.secondContent,
+        required this.thirdLabel,
+        required this.thirdContent,
+        required this.fourthLabel,
+        required this.fourthContent,
+        required this.color,
+        required this.trailingTop,});
 
   final String topLabel;
   final String trailingLabel;
