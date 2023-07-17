@@ -16,6 +16,7 @@ import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/network/api.dart';
 import 'package:spo_balaesang/network/api_service.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
+import 'package:spo_balaesang/screen/project/date/date_controller.dart';
 import 'package:spo_balaesang/screen/splash_screen.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -40,6 +41,7 @@ Future<void> main() async {
   GetStorage.init();
   Get.put(ApiProvider());
   Get.put(UserData());
+  Get.put(DateController());
 
   const initializedSettingsAndroid =
       AndroidInitializationSettings('ic_stat_onesignal_default');

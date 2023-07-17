@@ -75,4 +75,5 @@ flutter:
     - assets/logo/
     - assets/flare/
     - assets/launcher/
+    - assets/images/
   uses-material-design: true

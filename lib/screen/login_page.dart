@@ -5,18 +5,10 @@ import 'package:get/get.dart';
 
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
-import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/api/api_provider.dart';
 import 'package:spo_balaesang/models/user.dart';
-import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/forgot_pass_screen.dart';
-import 'package:spo_balaesang/utils/app_const.dart';
-import 'package:spo_balaesang/utils/view_util.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -232,6 +224,7 @@ class _LoginPageState extends State<LoginPage> {
                                       true == response.body['success']) {
                                     box.write('token', response.body['data']['token']);
                                     box.write('login', true);
+                                    box.write('user_id', response.body['data']['id']);
 
                                     setState(() {
                                       users.setUserData(response.body['data']);

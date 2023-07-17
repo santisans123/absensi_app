@@ -4,19 +4,20 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spo_balaesang/api/api_provider.dart';
 import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/login_page.dart';
-import 'package:spo_balaesang/screen/project/date_picker_project.dart';
+import 'package:spo_balaesang/screen/project/date/date_picker_project.dart';
 import 'package:spo_balaesang/screen/todo_list/buttonbar_todo_list.dart';
 import 'package:spo_balaesang/screen/todo_list/list_done.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
 class UserActivity extends StatefulWidget {
-  UserActivity({
-    Key key,
-  }) : super(key: key);
+  UserActivity({Key key, this.id_project}) : super(key: key);
+
+  final int id_project;
 
   @override
   _UserActivityState createState() => _UserActivityState();
@@ -28,6 +29,21 @@ class _UserActivityState extends State<UserActivity> {
   final deskripsiController = TextEditingController();
   bool isChecked = false;
   bool isChecked2 = false;
+
+  final ApiProvider apiProvider = Get.find();
+  var dataMember = [];
+
+  void _loadMember() {
+    apiProvider.getMember(widget.id_project).then((response) {
+      final data = response.body;
+      print("data api: ${response.body}");
+      print("data status: ${response.statusCode}");
+      setState(() {
+        var todo = data['data'] as List<dynamic>;
+        dataMember = todo;
+      });
+    });
+  }
 
   Future<void> logout() async {
     try {
@@ -52,14 +68,14 @@ class _UserActivityState extends State<UserActivity> {
             onPressed: () async {
               Get.back();
               final ProgressDialog pd =
-              ProgressDialog(context, isDismissible: false);
+                  ProgressDialog(context, isDismissible: false);
               pd.show();
               final dataRepo =
-              Provider.of<DataRepository>(context, listen: false);
+                  Provider.of<DataRepository>(context, listen: false);
               final Map<String, dynamic> response = await dataRepo.logout();
               if (response['success'] as bool) {
                 final SharedPreferences prefs =
-                await SharedPreferences.getInstance();
+                    await SharedPreferences.getInstance();
                 prefs.remove(prefsTokenKey);
                 prefs.remove(prefsUserKey);
                 prefs.remove(prefsAlarmKey);
@@ -98,48 +114,35 @@ class _UserActivityState extends State<UserActivity> {
     }
   }
 
-  void addTodo() {
-    final size_width = MediaQuery.of(context).size.width;
-    Get.defaultDialog(
-      title: 'Tambah To Do List',
-      content: Container(
-          padding: EdgeInsets.only(right: size_width * 0.01),
-          height: size_width / 1.5,
-          width: double.maxFinite,
-          child: ListView(
-            children: [
-              TextFormField(
-                textAlignVertical: TextAlignVertical.center,
-                controller: judulController,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Masukkan Judul",
-                  hintStyle: TextStyle(color: Colors.grey),
+  List<Widget> listMember() {
+    return dataMember
+        .map(
+          (row) => Card(
+            elevation: 2.0,
+            child: GestureDetector(
+              onTap: () {
+                Get.to(ListDone());
+              },
+              child: ListTile(
+                leading: ItemRounded(
+                    image:
+                        "https://ui-avatars.com/api/?name=${row['user']['name'].replaceAll(' ', '+')}&size=248"),
+                title: Text(
+                  '${row['user']['name']}',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  'Bagian: ${row['user']['position']}',
+                  style: TextStyle(color: Colors.black87),
+                ),
+                trailing: Icon(
+                  Icons.chevron_right,
                 ),
               ),
-              sizedBoxH8,
-              TextFormField(
-                textAlignVertical: TextAlignVertical.center,
-                controller: deskripsiController,
-                maxLines: 4,
-                minLines: 3,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Masukkan Deskripsi",
-                  hintStyle: TextStyle(color: Colors.grey),
-                ),
-              ),
-              sizedBoxH16,
-              DatePickerProject(),
-            ],
-          )),
-      onConfirm: () {
-        Get.back();
-      },
-      onCancel: () {},
-    );
+            ),
+          ),
+        )
+        .toList();
   }
 
   @override
@@ -152,6 +155,7 @@ class _UserActivityState extends State<UserActivity> {
   @override
   void initState() {
     super.initState();
+    _loadMember();
   }
 
   @override
@@ -174,8 +178,7 @@ class _UserActivityState extends State<UserActivity> {
         ),
         title: const Text('Aktivitas Tim'),
       ),
-      body: SingleChildScrollView(
-        child: Container(
+      body: Container(
           margin: const EdgeInsets.symmetric(horizontal: 8.0),
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Column(
@@ -191,60 +194,16 @@ class _UserActivityState extends State<UserActivity> {
                 ),
               ),
               dividerT1,
-              Card(
-                elevation: 2.0,
-                child: GestureDetector(
-                  onTap: () {
-                    Get.to(ListDone());
-                  },
-                  child: ListTile(
-                    leading: ItemRounded(image: 'assets/images/santi.jpeg'),
-                    title: Text(
-                      'Member 1',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      'Bagian: Developer',
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                    trailing: Icon(
-                      Icons.chevron_right,
-                    ),
-                  ),
-                ),
-              ),
               sizedBoxH6,
-              Card(
-                elevation: 2.0,
-                child: GestureDetector(
-                  onTap: () {
-                    Get.to(ListDone());
-                  },
-                  child: ListTile(
-                    leading: ItemRounded(image: 'assets/images/santi.jpeg'),
-                    title: Text(
-                      'Member 2',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      'Bagian: Admin',
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                    trailing: Icon(
-                      Icons.chevron_right,
-                    ),
-                  ),
-                ),
-              ),
-              sizedBoxH10,
+              Expanded(child: ListView(
+                children: listMember(),
+              ))
             ],
           ),
         ),
-      ),
     );
   }
 }
-
 
 class ItemRounded extends StatelessWidget {
   ItemRounded({
@@ -267,7 +226,7 @@ class ItemRounded extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(50),
           image: DecorationImage(
-            image: AssetImage(image),
+            image: NetworkImage(image),
             fit: BoxFit.cover,
           ),
         ),

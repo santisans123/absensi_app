@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spo_balaesang/api/api_provider.dart';
 import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/login_page.dart';
-import 'package:spo_balaesang/screen/project/date_picker_project.dart';
+import 'package:spo_balaesang/screen/project/date/date_controller.dart';
+import 'package:spo_balaesang/screen/project/date/date_picker_project.dart';
 import 'package:spo_balaesang/screen/todo_list/buttonbar_todo_list.dart';
 import 'package:spo_balaesang/screen/todo_list/user_activity.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
@@ -16,7 +19,10 @@ import 'package:spo_balaesang/utils/view_util.dart';
 class TodoListScreen extends StatefulWidget {
   TodoListScreen({
     Key key,
+    this.id_project
   }) : super(key: key);
+
+  final int id_project;
 
   @override
   _TodoListScreenState createState() => _TodoListScreenState();
@@ -27,7 +33,95 @@ class _TodoListScreenState extends State<TodoListScreen> {
   final judulController = TextEditingController();
   final deskripsiController = TextEditingController();
   bool isChecked = false;
-  bool isChecked2 = false;
+  final box = GetStorage();
+  final DateController dateController = Get.find();
+
+  var dataTodo = [];
+  var dataMember = [];
+
+  final ApiProvider apiProvider = Get.find();
+
+  void _loadData() {
+    apiProvider.getAllTodo(widget.id_project).then((response) {
+      final data = response.body;
+      print('project_id: ${widget.id_project}');
+      // print("data api: ${response.body}");
+      // print("data status: ${response.statusCode}");
+      setState(() {
+        var todo = data['data'] as List<dynamic> ;
+        dataTodo = todo;
+      });
+    });
+  }
+
+  void _loadMember() {
+    apiProvider.getMember(widget.id_project).then((response) {
+      final data = response.body;
+      // print("data api: ${response.body}");
+      // print("data status: ${response.statusCode}");
+      setState(() {
+        var todo = data['data'] as List<dynamic> ;
+        dataMember = todo;
+      });
+    });
+  }
+
+  void submit(){
+    apiProvider.postTodo({
+      'project_id' : widget.id_project,
+      'user_id' : box.read('user_id'),
+      'title': judulController.text,
+      'description': deskripsiController.text,
+      'deadline': dateController.dateValue.value,
+    }).then((response) {
+      print('date: ${dateController.dateValue.value}');
+      print('response ${response.body}');
+      print('status ${response.statusCode}');
+      if (response.statusCode == 200) {
+        Get.back();
+      } else {
+        Get.snackbar('Info',
+            'Gagal membuat to do list. Periksa kembali semua isian data');
+      }
+    });
+  }
+
+  List<Widget> listMember(){
+    return dataMember.map((row) =>
+        ItemRounded(
+            title: '${row['user']['name']}', image: "https://ui-avatars.com/api/?name=${row['user']['name'].replaceAll(' ', '+')}&size=248"
+            .toString()),
+      ).toList();
+  }
+
+  List<Widget> listTodo(){
+    return dataTodo.map((row) => Card(
+      elevation: 2.0,
+      child: InkWell(
+        onTap: () {},
+        child: ListTile(
+          leading: Checkbox(
+              value: isChecked,
+              onChanged: (bool newValue) {
+                setState(() {
+                  isChecked = newValue;
+                });
+              }),
+          title: Text(
+            '${row['title']}',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(
+            '${row['description']}',
+            style: TextStyle(color: Colors.black87),
+          ),
+          trailing: Icon(
+            Icons.more_vert,
+          ),
+        ),
+      ),
+    )).toList();
+  }
 
   Future<void> logout() async {
     try {
@@ -136,9 +230,11 @@ class _TodoListScreenState extends State<TodoListScreen> {
             ],
           )),
       onConfirm: () {
+        submit();
+      },
+      onCancel: () {
         Get.back();
       },
-      onCancel: () {},
     );
   }
 
@@ -175,6 +271,8 @@ class _TodoListScreenState extends State<TodoListScreen> {
   @override
   void initState() {
     super.initState();
+    _loadData();
+    _loadMember();
   }
 
   @override
@@ -197,8 +295,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
         ),
         title: const Text('To Do List'),
       ),
-      body: SingleChildScrollView(
-        child: Container(
+      body: Container(
           margin: const EdgeInsets.symmetric(horizontal: 8.0),
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Column(
@@ -224,10 +321,9 @@ class _TodoListScreenState extends State<TodoListScreen> {
                       },
                       child: const Icon(Icons.add),
                     ),
-                    ItemRounded(
-                        title: 'Santi', image: 'assets/images/santi.jpeg'),
-                    ItemRounded(
-                        title: 'Fidisa', image: 'assets/images/santi.jpeg'),
+                    Row(
+                      children: listMember()
+                    )
                   ]),
               sizedBoxH10,
               const Text(
@@ -275,68 +371,27 @@ class _TodoListScreenState extends State<TodoListScreen> {
                 ),
               ),
               dividerT1,
-              Card(
-                elevation: 2.0,
-                child: InkWell(
-                  onTap: () {},
-                  child: ListTile(
-                    leading: Checkbox(
-                        value: isChecked,
-                        onChanged: (bool newValue) {
-                          setState(() {
-                            isChecked = newValue;
-                          });
-                        }),
-                    title: Text(
-                      'To Do 1',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      'Mengerjakan Front End',
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                    trailing: Icon(
-                      Icons.more_vert,
-                    ),
-                  ),
-                ),
-              ),
-              Card(
-                elevation: 2.0,
-                child: InkWell(
-                  onTap: () {},
-                  child: ListTile(
-                    leading: Checkbox(
-                        value: isChecked2,
-                        onChanged: (bool newValue) {
-                          setState(() {
-                            isChecked2 = newValue;
-                          });
-                        }),
-                    title: Text(
-                      'To Do 2',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      'Mengerjakan Frontend',
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                    trailing: Icon(
-                      Icons.more_vert,
-                    ),
-                  ),
-                ),
-              ),
               sizedBoxH10,
+              Expanded(
+                  child: RefreshIndicator(
+                      onRefresh: () async {
+                        await Future.delayed(Duration(milliseconds: 100));
+                        setState(() {
+                          _loadData();
+                        });
+                      },
+                      child: ListView(
+                    children: listTodo(),
+                  )
+              ))
             ],
           ),
-        ),
       ),
       bottomNavigationBar: BottonbarTodolist(
         done: () {},
         todo: () {},
         activity: () {
-          Get.to(UserActivity());
+          Get.to(UserActivity(id_project: widget.id_project,));
         },
       ),
     );
@@ -368,7 +423,7 @@ class ItemRounded extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(50),
                 image: DecorationImage(
-                  image: AssetImage(image),
+                  image: NetworkImage(image),
                   fit: BoxFit.cover,
                 ),
               ),

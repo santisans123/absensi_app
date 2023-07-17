@@ -1,5 +1,9 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:spo_balaesang/screen/project/date/date_controller.dart';
+
+final dateProject = new GlobalKey<_DatePickerState>();
 
 class DatePickerProject extends StatefulWidget {
   DatePickerProject({
@@ -7,11 +11,13 @@ class DatePickerProject extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<DatePickerProject> createState() => _DatePickerEmerchantState();
+  State<DatePickerProject> createState() => _DatePickerState();
 }
 
-class _DatePickerEmerchantState extends State<DatePickerProject> {
+class _DatePickerState extends State<DatePickerProject> {
   TextEditingController dateinput = TextEditingController();
+
+  final DateController dateController = Get.find();
 
   @override
   void initState() {
@@ -43,7 +49,8 @@ class _DatePickerEmerchantState extends State<DatePickerProject> {
           print(formattedDate);
 
           setState(() {
-            dateinput.text = formattedDate;
+              dateinput.text = formattedDate;
+              dateController.setdate(dateinput.text);
           });
         }else{
           print("Date is not selected");

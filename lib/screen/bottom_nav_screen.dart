@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spo_balaesang/screen/application_screen.dart';
 import 'package:spo_balaesang/screen/home_page.dart';
-import 'package:spo_balaesang/screen/home_screen.dart';
 import 'package:spo_balaesang/screen/project/project_screen.dart';
 import 'package:spo_balaesang/screen/todo_list/personal/todo_list_personal.dart';
 

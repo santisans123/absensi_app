@@ -10,7 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/login_page.dart';
-import 'package:spo_balaesang/screen/project/date_picker_project.dart';
+import 'package:spo_balaesang/screen/project/date/date_controller.dart';
+import 'package:spo_balaesang/screen/project/date/date_picker_project.dart';
 import 'package:spo_balaesang/screen/todo_list/todo_list_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
@@ -26,25 +27,113 @@ class _ProjectScreenState extends State<ProjectScreen> {
   final deskripsiController = TextEditingController();
 
   final ApiProvider apiProvider = Get.find();
-  var dataProject = <dynamic>[];
+  var dataProject = [];
+  final DateController dateController = Get.find();
 
   void _loadData() {
-    final url = 'https://siap.sigarda.com/public/api/project-management/get-project';
-    DefaultCacheManager().getSingleFile(url).then((file) {
-      file.readAsString().then((str) {
-        final data = jsonDecode(str);
+    apiProvider.getProject().then((response) {
+        final data = response.body;
+        print("data api: ${response.body}");
+        print("data status: ${response.statusCode}");
         setState(() {
-          var project = data['data'];
-          // dataProject = project
-          //     .map((row) => [
-          //   row[0],
-          //   _listProject(
-          //   )
-          // ]).toList();
+          var project = data['data'] as List<dynamic> ;
+          dataProject = project;
+          // print('data: ${dataProject}');
         });
-      });
     });
   }
+
+  List<Widget> _listProject(){
+    return dataProject.map((row) =>
+        Card(
+          elevation: 2.0,
+          child: InkWell(
+            onTap: () {
+              Get.to(TodoListScreen(id_project: int.parse('${row['id']}')));
+            },
+            child: ListTile(
+              leading: Icon(
+                Icons.document_scanner,
+                color: Colors.purple,
+                size: 32.0,
+              ),
+              title: Text(
+                "${row['title']}",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                '${row['description']}',
+                style: TextStyle(color: Colors.black87),
+              ),
+              trailing: Text(
+                '${row['deadline']}',
+                style: TextStyle(color: Colors.black87),
+              ),
+            ),
+          ),
+        ),
+    ).toList();
+  }
+
+  void addProject() {
+    final size_width = MediaQuery.of(context).size.width;
+    Get.defaultDialog(
+      title: 'Tambah Project',
+      content: Container(
+          padding: EdgeInsets.only(right: size_width * 0.01),
+          height: size_width /1.5,
+          width: double.maxFinite,
+          child: ListView(
+            children: [
+              TextFormField(
+                textAlignVertical: TextAlignVertical.center,
+                controller: judulController,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Masukkan Judul",
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+              ),
+              sizedBoxH8,
+              TextFormField(
+                textAlignVertical: TextAlignVertical.center,
+                controller: deskripsiController,
+                maxLines: 4,
+                minLines: 3,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Masukkan Deskripsi",
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+              ),
+              sizedBoxH16,
+              DatePickerProject(),
+            ],)),
+      onConfirm: () { submit(); },
+      onCancel: () {Get.back();},
+    );
+  }
+
+  void submit(){
+    apiProvider.postProject({
+      'title': judulController.text,
+      'description': deskripsiController.text,
+      'deadline': dateController.dateValue.value,
+    }).then((response) {
+      print('date: ${dateController.dateValue.value}');
+      print('response ${response.body}');
+      print('status ${response.statusCode}');
+      if (response.statusCode == 200) {
+        Get.back();
+      } else {
+        Get.snackbar('Info',
+            'Gagal membuat project. Periksa kembali semua isian data');
+      }
+    });
+  }
+
 
   Future<void> logout() async {
     try {
@@ -109,79 +198,6 @@ class _ProjectScreenState extends State<ProjectScreen> {
     }
   }
 
-  void addProject() {
-    final size_width = MediaQuery.of(context).size.width;
-    Get.defaultDialog(
-      title: 'Tambah Project',
-      content: Container(
-          padding: EdgeInsets.only(right: size_width * 0.01),
-          height: size_width /1.5,
-          width: double.maxFinite,
-          child: ListView(
-            children: [
-              TextFormField(
-                textAlignVertical: TextAlignVertical.center,
-                controller: judulController,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Masukkan Judul",
-                  hintStyle: TextStyle(color: Colors.grey),
-                ),
-              ),
-              sizedBoxH8,
-              TextFormField(
-                textAlignVertical: TextAlignVertical.center,
-                controller: deskripsiController,
-                maxLines: 4,
-                minLines: 3,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Masukkan Deskripsi",
-                  hintStyle: TextStyle(color: Colors.grey),
-                ),
-              ),
-              sizedBoxH16,
-              DatePickerProject(),
-            ],)),
-      onConfirm: () { Get.back(); },
-      onCancel: () {},
-    );
-  }
-
-  List<Widget> _listProject(){
-    return dataProject.map((row) =>
-        Card(
-          elevation: 2.0,
-          child: InkWell(
-            onTap: () {
-              Get.to(TodoListScreen());
-            },
-            child: const ListTile(
-              leading: Icon(
-                Icons.document_scanner,
-                color: Colors.purple,
-                size: 32.0,
-              ),
-              title: Text(
-                'Project 1',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(
-                'Membuat Aplikasi Samawa',
-                style: TextStyle(color: Colors.black87),
-              ),
-              trailing: Text(
-                '12-07-2023',
-                style: TextStyle(color: Colors.black87),
-              ),
-            ),
-          ),
-        ),
-    ).toList();
-  }
-
   @override
   void setState(void Function() fn) {
     if (mounted) {
@@ -205,8 +221,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
         leadingWidth: Get.width * 0.25,
         title: const Text('Project'),
       ),
-      body: SingleChildScrollView(
-        child: Container(
+      body: Container(
           margin: const EdgeInsets.symmetric(horizontal: 8.0),
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Column(
@@ -232,8 +247,8 @@ class _ProjectScreenState extends State<ProjectScreen> {
                     'Add Project',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: const Text(
-                    'Tambahkan Project Anda',
+                  subtitle: Text(
+                    'project 1',
                     style: TextStyle(color: Colors.black87),
                   ),
                 ),
@@ -247,43 +262,23 @@ class _ProjectScreenState extends State<ProjectScreen> {
                   color: Colors.blueAccent,),
               ),
               dividerT1,
-              sizedBoxH6,
-              ListView(
-                  children: _listProject()
-              ),
               sizedBoxH10,
-              Card(
-                elevation: 2.0,
-                child: InkWell(
-                  onTap: () {
-                    Get.to(TodoListScreen());
+              Expanded (
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await Future.delayed(Duration(milliseconds: 100));
+                    setState(() {
+                      _loadData();
+                    });
                   },
-                  child: const ListTile(
-                    leading: Icon(
-                      Icons.document_scanner,
-                      color: Colors.purple,
-                      size: 32.0,
-                    ),
-                    title: Text(
-                      'Project 2',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      'Membuat Aplikasi SIAP',
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                    trailing: Text(
-                      '20-07-2023',
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                  ),
+                  child: ListView(
+                    children: _listProject()
+                  )
                 ),
-              ),
-              sizedBoxH10,
+              )
             ],
           ),
         ),
-      ),
     );
   }
 }

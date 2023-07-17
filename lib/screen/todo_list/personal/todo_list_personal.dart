@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/login_page.dart';
-import 'package:spo_balaesang/screen/project/date_picker_project.dart';
+import 'package:spo_balaesang/api/api_provider.dart';
+import 'package:spo_balaesang/screen/project/date/date_controller.dart';
+import 'package:spo_balaesang/screen/project/date/date_picker_project.dart';
 import 'package:spo_balaesang/screen/todo_list/buttonbar_todo_list.dart';
 import 'package:spo_balaesang/screen/todo_list/personal/buttonbar_personal.dart';
 import 'package:spo_balaesang/screen/todo_list/user_activity.dart';
@@ -27,8 +30,77 @@ class _TodoListPersonalState extends State<TodoListPersonal> {
   User user;
   final judulController = TextEditingController();
   final deskripsiController = TextEditingController();
+  final box = GetStorage();
   bool isChecked = false;
   bool isChecked2 = false;
+
+  final DateController dateController = Get.find();
+
+  var dataTodo = [];
+
+  final ApiProvider apiProvider = Get.find();
+
+  void _loadData() {
+    apiProvider.getTodoPersonal().then((response) {
+      final data = response.body;
+      print("data api: ${response.body}");
+      print("data status: ${response.statusCode}");
+      setState(() {
+        var todo = data['data'] as List<dynamic>;
+        dataTodo = todo;
+      });
+    });
+  }
+
+  void submit(){
+    apiProvider.postTodoPersonal({
+      'user_id' : box.read('user_id'),
+      'title': judulController.text,
+      'description': deskripsiController.text,
+      'deadline': dateController.dateValue.value,
+    }).then((response) {
+      print('date: ${dateController.dateValue.value}');
+      print('response ${response.body}');
+      print('status ${response.statusCode}');
+      if (response.statusCode == 200) {
+        Get.back();
+      } else {
+        Get.snackbar('Info',
+            'Gagal membuat to do list. Periksa kembali semua isian data');
+      }
+    });
+  }
+
+  List<Widget> listTodo() {
+    return dataTodo
+        .map((row) => Card(
+              elevation: 2.0,
+              child: InkWell(
+                onTap: () {},
+                child: ListTile(
+                  leading: Checkbox(
+                      value: isChecked,
+                      onChanged: (bool newValue) {
+                        setState(() {
+                          isChecked = newValue;
+                        });
+                      }),
+                  title: Text(
+                    '${row['title']}',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                    '${row['description']}',
+                    style: TextStyle(color: Colors.black87),
+                  ),
+                  trailing: Icon(
+                    Icons.more_vert,
+                  ),
+                ),
+              ),
+            ))
+        .toList();
+  }
 
   Future<void> logout() async {
     try {
@@ -53,14 +125,14 @@ class _TodoListPersonalState extends State<TodoListPersonal> {
             onPressed: () async {
               Get.back();
               final ProgressDialog pd =
-              ProgressDialog(context, isDismissible: false);
+                  ProgressDialog(context, isDismissible: false);
               pd.show();
               final dataRepo =
-              Provider.of<DataRepository>(context, listen: false);
+                  Provider.of<DataRepository>(context, listen: false);
               final Map<String, dynamic> response = await dataRepo.logout();
               if (response['success'] as bool) {
                 final SharedPreferences prefs =
-                await SharedPreferences.getInstance();
+                    await SharedPreferences.getInstance();
                 prefs.remove(prefsTokenKey);
                 prefs.remove(prefsUserKey);
                 prefs.remove(prefsAlarmKey);
@@ -100,6 +172,7 @@ class _TodoListPersonalState extends State<TodoListPersonal> {
   }
 
   void addTodo() {
+    _loadData();
     final size_width = MediaQuery.of(context).size.width;
     Get.defaultDialog(
       title: 'Tambah To Do List',
@@ -137,9 +210,11 @@ class _TodoListPersonalState extends State<TodoListPersonal> {
             ],
           )),
       onConfirm: () {
+        submit();
+      },
+      onCancel: () {
         Get.back();
       },
-      onCancel: () {},
     );
   }
 
@@ -153,6 +228,7 @@ class _TodoListPersonalState extends State<TodoListPersonal> {
   @override
   void initState() {
     super.initState();
+    _loadData();
   }
 
   @override
@@ -166,114 +242,71 @@ class _TodoListPersonalState extends State<TodoListPersonal> {
           todo: () {},
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 8.0),
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              sizedBoxH10,
-              const Text(
-                'Add',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18.0,
-                  color: Colors.blueAccent,
+      body: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            sizedBoxH10,
+            const Text(
+              'Add',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 18.0,
+                color: Colors.blueAccent,
+              ),
+            ),
+            dividerT1,
+            Card(
+              shadowColor: Colors.blue,
+              elevation: 5.0,
+              child: ListTile(
+                leading: const Icon(
+                  Icons.list,
+                  color: Colors.indigo,
+                  size: 32.0,
+                ),
+                trailing: FloatingActionButton(
+                  backgroundColor: Colors.blueAccent,
+                  onPressed: () {
+                    addTodo();
+                  },
+                  child: const Icon(Icons.add),
+                ),
+                title: const Text(
+                  'Add ToDoList',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: const Text(
+                  'Tambahkan ToDoList',
+                  style: TextStyle(color: Colors.black87),
                 ),
               ),
-              dividerT1,
-              Card(
-                shadowColor: Colors.blue,
-                elevation: 5.0,
-                child: ListTile(
-                  leading: const Icon(
-                    Icons.list,
-                    color: Colors.indigo,
-                    size: 32.0,
-                  ),
-                  trailing: FloatingActionButton(
-                    backgroundColor: Colors.blueAccent,
-                    onPressed: () {
-                      addTodo();
+            ),
+            sizedBoxH10,
+            const Text(
+              'To Do List',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 18.0,
+                color: Colors.blueAccent,
+              ),
+            ),
+            dividerT1,
+            sizedBoxH10,
+            Expanded(
+                child: RefreshIndicator(
+                    onRefresh: () async {
+                      await Future.delayed(Duration(milliseconds: 100));
+                      setState(() {
+                        _loadData();
+                      });
                     },
-                    child: const Icon(Icons.add),
-                  ),
-                  title: const Text(
-                    'Add ToDoList',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: const Text(
-                    'Tambahkan ToDoList',
-                    style: TextStyle(color: Colors.black87),
-                  ),
-                ),
-              ),
-              sizedBoxH10,
-              const Text(
-                'To Do List',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18.0,
-                  color: Colors.blueAccent,
-                ),
-              ),
-              dividerT1,
-              Card(
-                elevation: 2.0,
-                child: InkWell(
-                  onTap: () {},
-                  child: ListTile(
-                    leading: Checkbox(
-                        value: isChecked,
-                        onChanged: (bool newValue) {
-                          setState(() {
-                            isChecked = newValue;
-                          });
-                        }),
-                    title: Text(
-                      'To Do 1',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      'Mengerjakan Front End',
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                    trailing: Icon(
-                      Icons.more_vert,
-                    ),
-                  ),
-                ),
-              ),
-              Card(
-                elevation: 2.0,
-                child: InkWell(
-                  onTap: () {},
-                  child: ListTile(
-                    leading: Checkbox(
-                        value: isChecked2,
-                        onChanged: (bool newValue) {
-                          setState(() {
-                            isChecked2 = newValue;
-                          });
-                        }),
-                    title: Text(
-                      'To Do 2',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      'Mengerjakan Frontend',
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                    trailing: Icon(
-                      Icons.more_vert,
-                    ),
-                  ),
-                ),
-              ),
-              sizedBoxH10,
-            ],
-          ),
+                    child: ListView(
+                      children: listTodo(),
+                    ))),
+          ],
         ),
       ),
     );

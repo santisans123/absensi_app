@@ -3,7 +3,25 @@ import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:get_storage/get_storage.dart';
 
 class ApiProvider extends GetConnect {
+
   Future<Response> login(Map data) => post('/api/login', data);
+
+  Future<Response> postProject(Map data) => post('/api/project-management/insert-project', data);
+
+  Future<Response> postMemberProject(Map data) => post('/api/project-management/insert-member', data);
+
+  Future<Response> postTodo(Map data) => post('/api/todo-list/insert-todo-project', data);
+
+  Future<Response> postTodoPersonal(Map data) => post('/api/todo-list/insert-todo-personal', data);
+
+  Future<Response> getProject() => get('/api/project-management/get-project');
+
+  Future<Response> getAllTodo(id) => get('/api/todo-list/get-all-todo-project/$id');
+
+  Future<Response> getMember(id) => get('/api/project-management/get-member/$id');
+
+  Future<Response> getTodoPersonal() => get('/api/todo-list/get-todo-personal');
+
 
   final box = GetStorage();
 
