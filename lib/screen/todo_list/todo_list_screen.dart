@@ -54,6 +54,54 @@ class _TodoListScreenState extends State<TodoListScreen> {
     });
   }
 
+  void submitMember(int project_id, int index) {
+    print("index : ${index}");
+    apiProvider.postMemberProject({
+      'project_id': project_id,
+      'members[${index}]': deskripsiController.text,
+    }).then((response) {
+      print('date: ${dateController.dateValue.value}');
+      print('response ${response.body}');
+      print('status ${response.statusCode}');
+      if (response.statusCode == 200) {
+        _loadData();
+        Get.back();
+      } else {
+        Get.snackbar(
+            'Info', 'Gagal membuat project. Periksa kembali semua isian data');
+      }
+    });
+  }
+
+
+  void statusDone(String id) {
+    apiProvider.statusDoneProject({
+      'id': int.parse(id),
+    }).then((response) {
+      print('response ${response.body}');
+      print('status ${response.statusCode}');
+      if (response.statusCode == 200) {
+        _loadData();
+      } else {
+        Get.snackbar('Info', 'Gagal ceklis to do list.');
+      }
+    });
+  }
+
+  void statusUndone(String id) {
+    apiProvider.statusUndoneProject({
+      'id': int.parse(id),
+    }).then((response) {
+      print('response ${response.body}');
+      print('status ${response.statusCode}');
+      if (response.statusCode == 200) {
+        _loadData();
+      } else {
+        Get.snackbar('Info', 'Gagal un ceklis to do list.');
+      }
+    });
+  }
+
   void _loadMember() {
     apiProvider.getMember(widget.id_project).then((response) {
       final data = response.body;
@@ -101,10 +149,10 @@ class _TodoListScreenState extends State<TodoListScreen> {
         onTap: () {},
         child: ListTile(
           leading: Checkbox(
-              value: isChecked,
+              value: row['title'] == 1 ? true : false,
               onChanged: (bool newValue) {
                 setState(() {
-                  isChecked = newValue;
+                  row['status'] == 0 ? statusDone('${row['id']}') : statusUndone('${row['id']}');
                 });
               }),
           title: Text(
@@ -115,8 +163,13 @@ class _TodoListScreenState extends State<TodoListScreen> {
             '${row['description']}',
             style: TextStyle(color: Colors.black87),
           ),
-          trailing: Icon(
-            Icons.more_vert,
+          trailing: GestureDetector(
+            child: Icon(
+              Icons.delete,
+            ),
+            onTap: () {
+
+            },
           ),
         ),
       ),
@@ -247,15 +300,20 @@ class _TodoListScreenState extends State<TodoListScreen> {
           height: size_width / 1.5,
           width: double.maxFinite,
           child: Wrap(
-            children: [
-              ItemRounded(title: 'Santi', image: 'assets/images/santi.jpeg'),
-              ItemRounded(title: 'Fidisa', image: 'assets/images/santi.jpeg'),
-              ItemRounded(title: 'Fidisa', image: 'assets/images/santi.jpeg'),
-              ItemRounded(title: 'Fidisa', image: 'assets/images/santi.jpeg'),
-            ],
+            children: dataMember.map((row) =>
+                ItemRounded(
+                    title: '${row['user']['name']}',
+                    image: "https://ui-avatars.com/api/?name=${row['user']['name'].replaceAll(' ', '+')}&size=248"
+                    .toString()),
+            ).toList(),
           )),
       onConfirm: () {
-        Get.back();
+        dataMember.map((row) =>
+        submitMember(
+            int.parse('${row['user']['id']}'),
+            dataMember.indexOf(dataMember)
+        ));
+        _loadData();
       },
       onCancel: () {},
     );

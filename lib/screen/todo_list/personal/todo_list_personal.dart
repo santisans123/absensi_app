@@ -13,6 +13,8 @@ import 'package:spo_balaesang/screen/project/date/date_controller.dart';
 import 'package:spo_balaesang/screen/project/date/date_picker_project.dart';
 import 'package:spo_balaesang/screen/todo_list/buttonbar_todo_list.dart';
 import 'package:spo_balaesang/screen/todo_list/personal/buttonbar_personal.dart';
+import 'package:spo_balaesang/screen/todo_list/personal/list_done_personal.dart';
+import 'package:spo_balaesang/screen/todo_list/personal/list_undone_personal.dart';
 import 'package:spo_balaesang/screen/todo_list/user_activity.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
@@ -31,8 +33,6 @@ class _TodoListPersonalState extends State<TodoListPersonal> {
   final judulController = TextEditingController();
   final deskripsiController = TextEditingController();
   final box = GetStorage();
-  bool isChecked = false;
-  bool isChecked2 = false;
 
   final DateController dateController = Get.find();
 
@@ -52,9 +52,8 @@ class _TodoListPersonalState extends State<TodoListPersonal> {
     });
   }
 
-  void submit(){
-    apiProvider.postTodoPersonal({
-      'user_id' : box.read('user_id'),
+  void submitUpdate() {
+    apiProvider.editTodoPersonal({
       'title': judulController.text,
       'description': deskripsiController.text,
       'deadline': dateController.dateValue.value,
@@ -63,6 +62,121 @@ class _TodoListPersonalState extends State<TodoListPersonal> {
       print('response ${response.body}');
       print('status ${response.statusCode}');
       if (response.statusCode == 200) {
+        _loadData();
+        Get.back();
+      } else {
+        Get.snackbar(
+            'Info', 'Gagal membuat project. Periksa kembali semua isian data');
+      }
+    });
+  }
+
+  void editProject(String judul, String deskripsi, String date) {
+    judulController.text = judul;
+    deskripsiController.text = deskripsi;
+
+    final size_width = MediaQuery.of(context).size.width;
+    Get.defaultDialog(
+      title: 'Tambah To Do List',
+      content: Container(
+          padding: EdgeInsets.only(right: size_width * 0.01),
+          height: size_width / 1.5,
+          width: double.maxFinite,
+          child: ListView(
+            children: [
+              TextFormField(
+                textAlignVertical: TextAlignVertical.center,
+                controller: judulController,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Masukkan Judul",
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+              ),
+              sizedBoxH8,
+              TextFormField(
+                textAlignVertical: TextAlignVertical.center,
+                controller: deskripsiController,
+                maxLines: 4,
+                minLines: 3,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Masukkan Deskripsi",
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+              ),
+              sizedBoxH16,
+              DatePickerProject(date: date),
+            ],
+          )),
+      onConfirm: () {
+        submitUpdate();
+      },
+      onCancel: () {
+        Get.back();
+      },
+    );
+  }
+
+  void delete(String id) {
+    apiProvider.deleteTodoPersonal({
+      'id': int.parse(id),
+    }).then((response) {
+      print('response ${response.body}');
+      print('status ${response.statusCode}');
+      if (response.statusCode == 200) {
+        Get.back();
+        _loadData();
+      } else {
+        Get.snackbar('Info', 'Gagal menghapus to do list.');
+      }
+    });
+  }
+
+  void statusDone(String id) {
+    apiProvider.statusDonePersonal({
+      'id': int.parse(id),
+    }).then((response) {
+      print('response ${response.body}');
+      print('status ${response.statusCode}');
+      if (response.statusCode == 200) {
+        Get.back();
+        _loadData();
+      } else {
+        Get.snackbar('Info', 'Gagal ceklis to do list.');
+      }
+    });
+  }
+
+  void statusUndone(String id) {
+    apiProvider.statusUndonePersonal({
+      'id': int.parse(id),
+    }).then((response) {
+      print('response ${response.body}');
+      print('status ${response.statusCode}');
+      if (response.statusCode == 200) {
+        Get.back();
+        _loadData();
+      } else {
+        Get.snackbar('Info', 'Gagal un ceklis to do list.');
+      }
+    });
+  }
+
+  void submit() {
+    apiProvider.postTodoPersonal({
+      'user_id': box.read('user_id'),
+      'title': judulController.text,
+      'description': deskripsiController.text,
+      'deadline': dateController.dateValue.value,
+    }).then((response) {
+      print('date: ${dateController.dateValue.value}');
+      print('response ${response.body}');
+      print('status ${response.statusCode}');
+      if (response.statusCode == 200) {
+        _loadData();
         Get.back();
       } else {
         Get.snackbar('Info',
@@ -78,25 +192,59 @@ class _TodoListPersonalState extends State<TodoListPersonal> {
               child: InkWell(
                 onTap: () {},
                 child: ListTile(
-                  leading: Checkbox(
-                      value: isChecked,
-                      onChanged: (bool newValue) {
-                        setState(() {
-                          isChecked = newValue;
-                        });
-                      }),
-                  title: Text(
-                    '${row['title']}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    '${row['description']}',
-                    style: TextStyle(color: Colors.black87),
-                  ),
-                  trailing: Icon(
-                    Icons.more_vert,
-                  ),
-                ),
+                    leading: Checkbox(
+                        value: row['status'] == 1 ? true : false,
+                        onChanged: (bool newValue) {
+                          row['status'] == 0
+                              ? statusDone('${row['id']}')
+                              : statusUndone('${row['id']}');
+                        }),
+                    title: Text(
+                      '${row['title']}',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      '${row['description']}',
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                    trailing: Wrap(
+                        spacing: 12, // space between two icons
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              editProject(
+                                  "${row['title']}",
+                                  "${row['description']}",
+                                  '${row['deadline']}');
+                            },
+                            child: Icon(
+                              Icons.edit,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Get.defaultDialog(
+                                title: 'Keluar',
+                                content: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: const <Widget>[
+                                      Text(
+                                          'Apakah anda yakin ingin menghapus to do list?'),
+                                    ],
+                                  ),
+                                ),
+                                onConfirm: () {
+                                  delete('${row['id']}');
+                                },
+                                onCancel: () => Get.back(),
+                              );
+                            },
+                            child: Icon(
+                              Icons.delete,
+                            ),
+                          )
+                        ])),
               ),
             ))
         .toList();
@@ -172,7 +320,6 @@ class _TodoListPersonalState extends State<TodoListPersonal> {
   }
 
   void addTodo() {
-    _loadData();
     final size_width = MediaQuery.of(context).size.width;
     Get.defaultDialog(
       title: 'Tambah To Do List',
@@ -233,13 +380,18 @@ class _TodoListPersonalState extends State<TodoListPersonal> {
 
   @override
   Widget build(BuildContext context) {
+    _loadData();
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
         title: BottonbarPersonal(
-          done: () {},
-          todo: () {},
+          done: () {
+            Get.to(ListDonePersonal());
+          },
+          un_done: () {
+            Get.to(ListUndonePersonal());
+          },
         ),
       ),
       body: Container(

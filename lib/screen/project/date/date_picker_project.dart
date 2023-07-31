@@ -8,7 +8,10 @@ final dateProject = new GlobalKey<_DatePickerState>();
 class DatePickerProject extends StatefulWidget {
   DatePickerProject({
     Key key,
+    this.date
   }) : super(key: key);
+
+  final String date;
 
   @override
   State<DatePickerProject> createState() => _DatePickerState();
@@ -21,7 +24,7 @@ class _DatePickerState extends State<DatePickerProject> {
 
   @override
   void initState() {
-    dateinput.text = ""; //set the initial value of text field
+    dateinput.text = widget.date == null ? "" : widget.date; //set the initial value of text field
     super.initState();
   }
 
